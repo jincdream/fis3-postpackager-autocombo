@@ -1,0 +1,25 @@
+{
+  "name": "fis3-postpackager-autocombo",
+  "version": "1.0.4",
+  "description": "combourl fis3 fis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "combo",
+    "combourl",
+    "fis",
+    "fis3",
+    "postpackager"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jincdream/fis3-postpackager-autocombo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jincdream/fis3-postpackager-autocombo/issues"
+  },
+  "author": "JinC\u001b[D_C",
+  "license": "BSD"
+}
