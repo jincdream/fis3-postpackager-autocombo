@@ -59,9 +59,10 @@ function createRequireConfig(ret, conf, settings, opt) {
   }
 
   var checkAsync = function(_file) {
-    return !!(res[_file].extras && res[_file].extras.async)
+    return !!(res[_file] && res[_file].extras && res[_file].extras.async)
   }
   var getFileAsyncEnter = function(_file, rz) {
+    if(!res[_file])return rz;
     var goOn = []
     var deps = res[_file].deps
     checkAsync(_file) && rz.push.apply(rz, res[_file].extras.async)
@@ -109,29 +110,34 @@ function createRequireConfig(ret, conf, settings, opt) {
         let links = comboUrl.links[_file]
         let scripts = comboUrl.scripts[_file]
         let type  = res[__file] ? res[__file].type : ''
-        let cType = res[__file].extras ? res[__file].extras.comboTo : void 0
+        let cType = (res[__file] && res[__file].extras) ? res[__file].extras.comboTo : void 0
+        let cOrder = (res[__file] && res[__file].extras) ? res[__file].extras.comboOrder : void 0
         if(type === 'css'){
           if(!links){
             comboUrl.links[_file] = [{
               url : getUri(__file),
-              cType : cType
+              cType : cType,
+              cOrder: cOrder
             }]
           }else {
             links.push({
               url : getUri(__file),
-              cType : cType
+              cType : cType,
+              cOrder: cOrder
             })
           }
         }else if(type === 'js'){
           if(!scripts){
             comboUrl.scripts[_file] = [{
               url : getUri(__file),
-              cType : cType
+              cType : cType,
+              cOrder: cOrder
             }]
           }else {
             scripts.push({
               url : getUri(__file),
-              cType : cType
+              cType : cType,
+              cOrder: cOrder
             })
           }
         }
