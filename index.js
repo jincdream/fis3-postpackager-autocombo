@@ -111,7 +111,7 @@ function createRequireConfig(ret, conf, settings, opt) {
         let scripts = comboUrl.scripts[_file]
         let type  = res[__file] ? res[__file].type : ''
         let cType = (res[__file] && res[__file].extras) ? res[__file].extras.comboTo : void 0
-        let cOrder = (res[__file] && res[__file].extras) ? res[__file].extras.comboOrder : void 0
+        let cOrder = (res[__file] && res[__file].extras) ? res[__file].extras.comboOrder : 1
         if(type === 'css'){
           if(!links){
             comboUrl.links[_file] = [{
@@ -216,48 +216,95 @@ function createRequireConfig(ret, conf, settings, opt) {
 
       _comboJS.forEach(function(obj){
         let type = obj.cType || -99
-        comboJS[type] ? comboJS[type].push(obj.url) : comboJS[type] = [obj.url]
+        comboJS[type] ? comboJS[type].push(obj) : comboJS[type] = [obj]
       })
       _comboCSS.forEach(function(obj){
         let type = obj.cType || -99
-        comboCSS[type] ? comboCSS[type].push(obj.url) : comboCSS[type] = [obj.url]
+        comboCSS[type] ? comboCSS[type].push(obj) : comboCSS[type] = [obj]
       })
-      
       Object.keys(comboJS).map(function(type){
         return +type
       }).sort().forEach(function(type){
         let thisComboJS = comboJS[''+type]
         // thisComboJS.reverse()
-        console.log(type)
+        
         if(type <=99 && type >=0 && oConfig.combo ){
-          ;[].push.apply(comboJSRz,thisComboJS.map(function(url){return url.replace(DOMAIN , '')}))
+          let urls = thisComboJS.sort(function(a,b){
+            return a.cOrder - b.cOrder
+          }).map(function(obj){
+            return obj.url.replace(DOMAIN , '')
+          })
+          comboJSRz.push('<script src="'+ DOMAIN + COMBO_URL + urls.join(',') + '"></script>')
+          // ;[].push.apply(comboJSRz,thisComboJS.map(function(url){return url.replace(DOMAIN , '')}))
         }else if(type < 0){
-          unComboJSRzTop.push(thisComboJS.map(function(url) {
-              return '<script src="'+ DOMAIN + url + '"></script>'
+          unComboJSRzTop.push(thisComboJS.map(function(obj) {
+              return '<script src="'+ DOMAIN + obj.url + '"></script>'
            }).join('\n'))
         }else{
-          unComboJSRzLaster.push(thisComboJS.map(function(url) {
-              return '<script src="' + DOMAIN + url + '"></script>'
+          unComboJSRzLaster.push(thisComboJS.map(function(obj) {
+              return '<script src="' + DOMAIN + obj.url + '"></script>'
            }).join('\n'))
         }
       })
+
       Object.keys(comboCSS).map(function(type){
         return +type
       }).sort().forEach(function(type){
         let thisComboCSS = comboCSS[''+type]
         // thisComboCSS.reverse()
         if(type <=99 && type >=0 && oConfig.combo ){
-          ;[].push.apply(comboCSSRz,thisComboCSS.map(function(url){return url.replace(DOMAIN , '')}))
+          let urls = thisComboCSS.sort(function(a,b){
+            return a.cOrder - b.cOrder
+          }).map(function(obj){
+            return obj.url.replace(DOMAIN , '')
+          })
+          comboCSSRz.push('<link href="'+ DOMAIN + COMBO_URL + urls.join(',')+ '" type="text/css" rel="stylesheet" />')
+          // ;[].push.apply(comboCSSRz,thisComboCSS.map(function(url){return url.replace(DOMAIN , '')}))
         }else if(type < 0){
-          unComboCSSRzTop.push(thisComboCSS.map(function(url) {
-              return '<link type="text/css" rel="stylesheet" href="' + DOMAIN + url + '" />'
+          unComboCSSRzTop.push(thisComboCSS.map(function(obj) {
+              return '<link href="'+ DOMAIN + obj.url + '" type="text/css" rel="stylesheet" />'
            }).join('\n'))
-        }else if(type > 99){
-          unComboCSSRzLaster.push(thisComboCSS.map(function(url) {
-              return '<link type="text/css" rel="stylesheet" href="' + DOMAIN + url + '" />'
+        }else{
+          unComboCSSRzLaster.push(thisComboCSS.map(function(obj) {
+              return '<link href="'+DOMAIN + obj.url + '" type="text/css" rel="stylesheet" />'
            }).join('\n'))
         }
       })
+      // Object.keys(comboJS).map(function(type){
+      //   return +type
+      // }).sort().forEach(function(type){
+      //   let thisComboJS = comboJS[''+type]
+      //   // thisComboJS.reverse()
+      //   console.log(type)
+      //   if(type <=99 && type >=0 && oConfig.combo ){
+      //     ;[].push.apply(comboJSRz,thisComboJS.map(function(url){return url.replace(DOMAIN , '')}))
+      //   }else if(type < 0){
+      //     unComboJSRzTop.push(thisComboJS.map(function(url) {
+      //         return '<script src="'+ DOMAIN + url + '"></script>'
+      //      }).join('\n'))
+      //   }else{
+      //     unComboJSRzLaster.push(thisComboJS.map(function(url) {
+      //         return '<script src="' + DOMAIN + url + '"></script>'
+      //      }).join('\n'))
+      //   }
+      // })
+      // Object.keys(comboCSS).map(function(type){
+      //   return +type
+      // }).sort().forEach(function(type){
+      //   let thisComboCSS = comboCSS[''+type]
+      //   // thisComboCSS.reverse()
+      //   if(type <=99 && type >=0 && oConfig.combo ){
+      //     ;[].push.apply(comboCSSRz,thisComboCSS.map(function(url){return url.replace(DOMAIN , '')}))
+      //   }else if(type < 0){
+      //     unComboCSSRzTop.push(thisComboCSS.map(function(url) {
+      //         return '<link type="text/css" rel="stylesheet" href="' + DOMAIN + url + '" />'
+      //      }).join('\n'))
+      //   }else if(type > 99){
+      //     unComboCSSRzLaster.push(thisComboCSS.map(function(url) {
+      //         return '<link type="text/css" rel="stylesheet" href="' + DOMAIN + url + '" />'
+      //      }).join('\n'))
+      //   }
+      // })
       // Object.keys(comboCSS).map(function(type){
       //   return +type
       // }).sort().forEach(function(type){
@@ -278,10 +325,12 @@ function createRequireConfig(ret, conf, settings, opt) {
       //                               return '<link href="' + url + '"/>'
       //                            })).join('\n')) : '';
       // console.log(comboLinks,comboCSS,_file)
-      console.log(comboJSRz)
-      file.setContent(content.replace(/<!--REQUIRE_CONFIG-->/g, config)
-                             .replace('<!--COMBO_JS-->', unComboJSRzTop.join('\n') + (comboJSRz.length > 0 ? '<script src="' + oConfig.domain + oConfig.comboUrl + comboJSRz.join(',') + '"></script>':'') + unComboJSRzLaster.join('\n'))
-                             .replace('<!--COMBO_CSS-->', unComboCSSRzTop.join('\n') + (comboCSSRz.length > 0 ? '<link type="text/css" rel="stylesheet" href="' + oConfig.domain + oConfig.comboUrl + comboCSSRz.join(',') + '" />':'') + unComboCSSRzLaster.join('\n')))
+//       console.log(_file,'=============',comboJSRz,'\n'
+// ,unComboJSRzTop,'\n'
+// ,unComboJSRzLaster)
+      file.setContent(content.replace(/<!--REQUIRE_CONFIG-->|__REQUIRE_CONFIG__|window\.__REQUIRE_CONFIG__/g, config)
+                             .replace('<!--COMBO_JS-->', unComboJSRzTop.join('\n') + (comboJSRz.length > 0 ? comboJSRz.join('\n') :'') + unComboJSRzLaster.join('\n'))
+                             .replace('<!--COMBO_CSS-->', unComboCSSRzTop.join('\n') + (comboCSSRz.length > 0 ? comboCSSRz.join('\n') :'') + unComboCSSRzLaster.join('\n')))
       }
 
   })

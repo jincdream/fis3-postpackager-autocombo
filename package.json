@@ -1,6 +1,6 @@
 {
   "name": "fis3-postpackager-autocombo",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "description": "combourl fis3 fis",
   "main": "index.js",
   "scripts": {
